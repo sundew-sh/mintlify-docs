@@ -40,8 +40,8 @@ make run     # start locally
 
 ## Code style
 
-- **Python 3.11+** — modern syntax (`|` unions, `match` statements)
-- **Type hints everywhere** — all function signatures, return types, class attributes
+- **Python 3.11+** -modern syntax (`|` unions, `match` statements)
+- **Type hints everywhere** -all function signatures, return types, class attributes
 - **Ruff** for linting and formatting (line length 100)
 - **mypy** in strict mode
 - **Google-style docstrings** on all public functions and classes
@@ -61,7 +61,7 @@ make fmt     # auto-format
   </Step>
   <Step title="Write code">
     Follow the code style above. Key principles:
-    - No TODOs in code — future work goes in ROADMAP.md or GitHub issues
+    - No TODOs in code -future work goes in ROADMAP.md or GitHub issues
     - Tests for every change
     - Never execute user-supplied code (see [threat model](/security/threat-model))
   </Step>
@@ -124,7 +124,7 @@ def create_router(persona: Persona, collector: FingerprintCollector) -> APIRoute
 ```
 
 Key requirements:
-- Every trap **must** read from the persona — no hardcoded responses
+- Every trap **must** read from the persona -no hardcoded responses
 - Every request **must** be recorded via `FingerprintCollector`
 - No LLM calls at runtime
 - No execution of user-supplied input

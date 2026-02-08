@@ -43,13 +43,13 @@ A fully protocol-compliant [Model Context Protocol](https://modelcontextprotocol
 **What it does:**
 - Registers as a discoverable MCP server
 - Exposes tools that match the persona's industry theme
-- Returns hardcoded fake responses — **never executes real commands**
+- Returns hardcoded fake responses -**never executes real commands**
 - Logs all MCP interactions for fingerprinting
 
 **Example tools for a fintech persona:**
-- `query_transactions` — returns fake transaction data
-- `get_customer_profile` — returns fake customer records
-- `read_config` — returns fake configuration with canary tokens
+- `query_transactions` -returns fake transaction data
+- `get_customer_profile` -returns fake customer records
+- `read_config` -returns fake configuration with canary tokens
 
 <Warning>
 MCP tool responses are pure fiction. `execute_command`, `execute_sql`, `read_file`, and all other tool handlers return hardcoded cached responses only. No shell, no database query, no filesystem read is performed.
@@ -63,7 +63,7 @@ Endpoints that AI agents naturally probe when scanning for services to interact 
 
 | Path | Purpose |
 |---|---|
-| `/.well-known/ai-plugin.json` | OpenAI plugin manifest — signals AI-targetable service |
+| `/.well-known/ai-plugin.json` | OpenAI plugin manifest -signals AI-targetable service |
 | `/.well-known/mcp.json` | MCP server discovery |
 | `/robots.txt` | Contains `Allow:` directives that attract crawlers |
 | `/sitemap.xml` | Lists persona-generated pages and endpoints |
@@ -82,4 +82,4 @@ traps:
   ai_discovery: true
 ```
 
-All three are enabled by default. Disabling a trap removes its routes entirely — no 404s, no trace that the trap exists.
+All three are enabled by default. Disabling a trap removes its routes entirely -no 404s, no trace that the trap exists.

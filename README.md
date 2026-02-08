@@ -1,6 +1,6 @@
 # Sundew Documentation
 
-Documentation site for [Sundew](https://github.com/sundew-sh/sundew) — a carnivorous honeypot for AI agents.
+Documentation site for [Sundew](https://github.com/sundew-sh/sundew), a carnivorous honeypot for AI agents.
 
 Live at [docs.sundew.sh](https://docs.sundew.sh).
 

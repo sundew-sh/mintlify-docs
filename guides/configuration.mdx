@@ -19,7 +19,7 @@ llm:
   provider: ollama         # ollama | anthropic | openai | none
   model: llama3            # Model name for the provider
   base_url: null           # Custom API base URL (optional)
-  api_key: null            # API key — use env vars instead
+  api_key: null            # API key -use env vars instead
   temperature: 0.7         # Generation temperature
   max_tokens: 2048         # Max tokens per generation
 
@@ -47,7 +47,7 @@ traps:
   ai_discovery: true
 ```
 
-Disabling a trap removes its routes entirely — no 404s, no trace.
+Disabling a trap removes its routes entirely -no 404s, no trace.
 
 ## Persona
 
@@ -107,7 +107,7 @@ Sundew uses an LLM to generate response templates at deploy time. Supported prov
 </Tabs>
 
 <Info>
-LLM calls happen **only at deploy time** during persona generation. There are zero LLM calls during runtime operation — all responses are served from the pre-generated template cache.
+LLM calls happen **only at deploy time** during persona generation. There are zero LLM calls during runtime operation -all responses are served from the pre-generated template cache.
 </Info>
 
 ## Server
@@ -132,8 +132,8 @@ storage:
   log_file: ./data/events.jsonl
 ```
 
-- **SQLite** — structured storage for queries and session analysis
-- **JSONL** — append-only streaming log with automatic rotation (100 MB default, 5 backups)
+- **SQLite** -structured storage for queries and session analysis
+- **JSONL** -append-only streaming log with automatic rotation (100 MB default, 5 backups)
 
 ## Environment variables
 

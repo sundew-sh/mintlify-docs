@@ -17,6 +17,6 @@
 
 - Use active voice: "Run the command" not "The command should be run"
 - Address the reader directly with "you"
-- Keep sentences concise — one idea per sentence
+- Keep sentences concise, one idea per sentence
 - Include code examples with realistic values
 - Add frontmatter (title, description) to every page

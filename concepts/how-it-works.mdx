@@ -12,7 +12,7 @@ Sundew is a passive honeypot. It serves fabricated data, logs inbound requests, 
 3. **Classifier** maps composite scores to attack categories
 4. **Storage** persists events to SQLite and streaming JSONL logs
 
-The **persona engine** shapes everything above — endpoint paths, response bodies, headers, timing, error formats, tool names, and data themes. Every deployment is unique.
+The **persona engine** shapes everything above -endpoint paths, response bodies, headers, timing, error formats, tool names, and data themes. Every deployment is unique.
 
 ## Request flow
 
@@ -67,7 +67,7 @@ Sessions are grouped by source IP and temporal proximity. Classification is upda
 
 Events are persisted in two formats:
 
-- **SQLite** (`./data/sundew.db`) — structured storage for queries, sessions, and aggregated fingerprints
-- **JSONL** (`./data/events.jsonl`) — append-only streaming log for real-time processing and export
+- **SQLite** (`./data/sundew.db`) -structured storage for queries, sessions, and aggregated fingerprints
+- **JSONL** (`./data/events.jsonl`) -append-only streaming log for real-time processing and export
 
 Both are queryable via the CLI (`sundew query`) or the MCP server (`sundew mcp-client`).

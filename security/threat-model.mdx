@@ -14,7 +14,7 @@ These properties **must** hold for every Sundew deployment. If any invariant is 
 | **Read-only filesystem** | Container root filesystem is read-only. Only `./data/` is writable. |
 | **Non-root execution** | Runs as UID 1001 (`sundew` user). No capabilities granted. |
 | **No outbound network** | Egress blocked by default. Zero outbound connections. DNS disabled inside the container. |
-| **No real secrets** | All tokens are verifiably fake — `sk-sundew-FAKE-` prefixed keys, RFC 1918 IPs, `.example.com` domains. |
+| **No real secrets** | All tokens are verifiably fake -`sk-sundew-FAKE-` prefixed keys, RFC 1918 IPs, `.example.com` domains. |
 
 ## Canary token safety
 
@@ -72,10 +72,10 @@ make audit
 ```
 
 This executes:
-1. `pip-audit` — dependency vulnerability scan
-2. `bandit -r src/` — static analysis for Python security issues
-3. `pytest tests/test_security.py` — runtime invariant verification
-4. `pytest tests/test_anti_detection.py` — anti-fingerprinting verification
+1. `pip-audit` -dependency vulnerability scan
+2. `bandit -r src/` -static analysis for Python security issues
+3. `pytest tests/test_security.py` -runtime invariant verification
+4. `pytest tests/test_anti_detection.py` -anti-fingerprinting verification
 
 All four must pass before any release.
 

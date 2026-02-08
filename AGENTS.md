@@ -6,18 +6,18 @@ Sundew is an open-source honeypot framework that detects and fingerprints autono
 
 ## Mintlify basics
 
-- Configuration lives in `docs.json` — check it before making structural changes
+- Configuration lives in `docs.json` -check it before making structural changes
 - Use MDX format for all documentation pages
 - Run `mint dev` locally to preview changes
 - Run `mint broken-links` to check for broken links
 
 ## Content structure
 
-- **Getting started**: `index.mdx`, `quickstart.mdx` — entry points for new users
-- **Concepts**: `concepts/` — how Sundew works (architecture, persona engine, traps, fingerprinting)
-- **Guides**: `guides/` — practical how-to docs (configuration, deployment, personas, querying)
-- **Security**: `security/` — threat model and ethical use
-- **Reference**: `reference/` — CLI commands, config reference, contributing guide
+- **Getting started**: `index.mdx`, `quickstart.mdx` -entry points for new users
+- **Concepts**: `concepts/` -how Sundew works (architecture, persona engine, traps, fingerprinting)
+- **Guides**: `guides/` -practical how-to docs (configuration, deployment, personas, querying)
+- **Security**: `security/` -threat model and ethical use
+- **Reference**: `reference/` -CLI commands, config reference, contributing guide
 
 ## Style guidelines
 

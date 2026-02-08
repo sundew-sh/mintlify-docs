@@ -11,7 +11,7 @@ Sundew analyzes every request across five behavioral signals. Each produces a sc
 
 **What it measures:** How regular the intervals between requests are.
 
-Human browsing produces irregular timing — long pauses to read, rapid clicks on navigation. AI agents typically make requests at consistent intervals determined by their rate limiting or processing loops.
+Human browsing produces irregular timing -long pauses to read, rapid clicks on navigation. AI agents typically make requests at consistent intervals determined by their rate limiting or processing loops.
 
 | Pattern | Score |
 |---|---|
@@ -23,7 +23,7 @@ Human browsing produces irregular timing — long pauses to read, rapid clicks o
 
 **What it measures:** Whether endpoints are discovered systematically or randomly.
 
-Humans follow links. AI agents enumerate — they read the OpenAPI spec, then hit every endpoint in order. Sundew detects this sequential, exhaustive pattern.
+Humans follow links. AI agents enumerate -they read the OpenAPI spec, then hit every endpoint in order. Sundew detects this sequential, exhaustive pattern.
 
 | Pattern | Score |
 |---|---|
@@ -47,7 +47,7 @@ AI agents often have missing `Referer` headers, bot-like `User-Agent` strings, u
 
 **What it measures:** LLM artifacts in request bodies.
 
-When AI agents craft HTTP requests, their underlying LLM sometimes leaks through — phrases like "As an AI assistant", "I'll help you with", or structured chain-of-thought reasoning in POST bodies.
+When AI agents craft HTTP requests, their underlying LLM sometimes leaks through -phrases like "As an AI assistant", "I'll help you with", or structured chain-of-thought reasoning in POST bodies.
 
 | Pattern | Score |
 |---|---|
@@ -84,9 +84,9 @@ Scores are computed per-request and aggregated per-session. As more requests arr
 
 Requests are grouped into sessions by:
 
-- **Source IP** — same origin
-- **Temporal proximity** — requests within a configurable window
-- **Behavioral continuity** — consistent fingerprint patterns
+- **Source IP** -same origin
+- **Temporal proximity** -requests within a configurable window
+- **Behavioral continuity** -consistent fingerprint patterns
 
 Each session tracks:
 - All request IDs (ordered)

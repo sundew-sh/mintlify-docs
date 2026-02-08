@@ -9,7 +9,7 @@ Traditional honeypots have a fatal flaw: they all look the same. Once an attacke
 
 ## The solution
 
-On first run, Sundew generates a **deployment persona** — a coherent identity that shapes every aspect of the honeypot:
+On first run, Sundew generates a **deployment persona** -a coherent identity that shapes every aspect of the honeypot:
 
 ```yaml
 persona:
@@ -26,13 +26,13 @@ persona:
 
 This persona determines:
 
-- **Endpoint paths** — `/api/v2/transactions` vs `/v1/patients` vs `/graphql`
-- **Response bodies** — financial data, healthcare records, SaaS metrics
-- **HTTP headers** — `Server`, `X-Powered-By`, error formats
-- **Timing profiles** — simulated latency matching real-world services
-- **Auth schemes** — bearer JWT, API keys, OAuth2, basic auth
-- **MCP tool names** — `query_transactions` vs `get_patient_records`
-- **Error formats** — RFC 7807, simple JSON, HTML, XML
+- **Endpoint paths** -`/api/v2/transactions` vs `/v1/patients` vs `/graphql`
+- **Response bodies** -financial data, healthcare records, SaaS metrics
+- **HTTP headers** -`Server`, `X-Powered-By`, error formats
+- **Timing profiles** -simulated latency matching real-world services
+- **Auth schemes** -bearer JWT, API keys, OAuth2, basic auth
+- **MCP tool names** -`query_transactions` vs `get_patient_records`
+- **Error formats** -RFC 7807, simple JSON, HTML, XML
 
 ## Generation methods
 
@@ -55,7 +55,7 @@ Personas can be generated three ways:
     llm:
       provider: none
     ```
-    Sundew falls back to packs in `src/sundew/persona/packs/` — fintech, SaaS, healthcare, and more.
+    Sundew falls back to packs in `src/sundew/persona/packs/` -fintech, SaaS, healthcare, and more.
   </Tab>
   <Tab title="Custom">
     Provide your own persona file for full control:
