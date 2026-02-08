@@ -1,0 +1,96 @@
+---
+title: Fingerprinting
+description: How Sundew detects AI agents through behavioral analysis
+---
+
+## The five signals
+
+Sundew analyzes every request across five behavioral signals. Each produces a score from 0.0 (human-like) to 1.0 (AI agent-like).
+
+### Timing consistency
+
+**What it measures:** How regular the intervals between requests are.
+
+Human browsing produces irregular timing — long pauses to read, rapid clicks on navigation. AI agents typically make requests at consistent intervals determined by their rate limiting or processing loops.
+
+| Pattern | Score |
+|---|---|
+| Irregular, human-like intervals | 0.0 – 0.2 |
+| Semi-regular with some variation | 0.3 – 0.5 |
+| Highly consistent intervals (200-800ms) | 0.7 – 1.0 |
+
+### Path enumeration
+
+**What it measures:** Whether endpoints are discovered systematically or randomly.
+
+Humans follow links. AI agents enumerate — they read the OpenAPI spec, then hit every endpoint in order. Sundew detects this sequential, exhaustive pattern.
+
+| Pattern | Score |
+|---|---|
+| Link-following, non-sequential | 0.0 – 0.2 |
+| Partial enumeration | 0.3 – 0.5 |
+| Full systematic enumeration from spec | 0.7 – 1.0 |
+
+### Header anomalies
+
+**What it measures:** HTTP headers that betray non-human clients.
+
+AI agents often have missing `Referer` headers, bot-like `User-Agent` strings, unusual `Accept` values, or missing standard browser headers entirely.
+
+| Pattern | Score |
+|---|---|
+| Full browser headers | 0.0 – 0.2 |
+| Some missing or unusual headers | 0.3 – 0.5 |
+| Bot UA, missing Referer, minimal headers | 0.7 – 1.0 |
+
+### Prompt leakage
+
+**What it measures:** LLM artifacts in request bodies.
+
+When AI agents craft HTTP requests, their underlying LLM sometimes leaks through — phrases like "As an AI assistant", "I'll help you with", or structured chain-of-thought reasoning in POST bodies.
+
+| Pattern | Score |
+|---|---|
+| No LLM artifacts | 0.0 |
+| Subtle phrasing patterns | 0.3 – 0.5 |
+| Explicit LLM artifacts in body | 0.7 – 1.0 |
+
+### MCP behavior
+
+**What it measures:** Whether the client connects via the Model Context Protocol.
+
+MCP is designed for AI agent communication. A client connecting via MCP is almost certainly an AI agent or AI-powered tool.
+
+| Pattern | Score |
+|---|---|
+| HTTP only, no MCP | 0.0 |
+| MCP initialize only | 0.5 |
+| Full MCP tool calling session | 1.0 |
+
+## Composite scoring
+
+The five signals are combined into a single composite score using a weighted average. The composite score maps to the final classification:
+
+| Composite score | Classification |
+|---|---|
+| < 0.3 | `human` |
+| 0.3 – 0.6 | `automated` |
+| 0.6 – 0.8 | `ai_assisted` |
+| > 0.8 | `ai_agent` |
+
+Scores are computed per-request and aggregated per-session. As more requests arrive from the same source, the classification confidence increases.
+
+## Session correlation
+
+Requests are grouped into sessions by:
+
+- **Source IP** — same origin
+- **Temporal proximity** — requests within a configurable window
+- **Behavioral continuity** — consistent fingerprint patterns
+
+Each session tracks:
+- All request IDs (ordered)
+- Aggregated fingerprint scores
+- Endpoints hit
+- Trap types triggered
+- Final classification with confidence

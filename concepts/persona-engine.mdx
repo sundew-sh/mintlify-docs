@@ -1,0 +1,88 @@
+---
+title: Persona engine
+description: How Sundew generates unique identities for every deployment
+---
+
+## The problem
+
+Traditional honeypots have a fatal flaw: they all look the same. Once an attacker (or AI agent) learns the signature of a particular honeypot, they can avoid every identical deployment worldwide.
+
+## The solution
+
+On first run, Sundew generates a **deployment persona** — a coherent identity that shapes every aspect of the honeypot:
+
+```yaml
+persona:
+  company_name: "Northvane Analytics"
+  industry: "fintech"
+  api_style: "rest"
+  framework_fingerprint: "express"
+  auth_scheme: "bearer_jwt"
+  data_theme: "financial"
+  response_latency_ms: [80, 350]
+  server_header: "nginx/1.24.0"
+  endpoint_prefix: "/api/v2"
+```
+
+This persona determines:
+
+- **Endpoint paths** — `/api/v2/transactions` vs `/v1/patients` vs `/graphql`
+- **Response bodies** — financial data, healthcare records, SaaS metrics
+- **HTTP headers** — `Server`, `X-Powered-By`, error formats
+- **Timing profiles** — simulated latency matching real-world services
+- **Auth schemes** — bearer JWT, API keys, OAuth2, basic auth
+- **MCP tool names** — `query_transactions` vs `get_patient_records`
+- **Error formats** — RFC 7807, simple JSON, HTML, XML
+
+## Generation methods
+
+Personas can be generated three ways:
+
+<Tabs>
+  <Tab title="LLM-powered (recommended)">
+    Use a local or cloud LLM to generate rich, realistic response templates:
+    ```yaml
+    llm:
+      provider: ollama    # or anthropic, openai
+      model: llama3
+    ```
+    Templates are generated **at deploy time** and cached. Zero LLM latency during operation.
+  </Tab>
+  <Tab title="Pre-built packs">
+    Ship without an LLM using pre-built persona packs for common industries:
+    ```yaml
+    persona: auto
+    llm:
+      provider: none
+    ```
+    Sundew falls back to packs in `src/sundew/persona/packs/` — fintech, SaaS, healthcare, and more.
+  </Tab>
+  <Tab title="Custom">
+    Provide your own persona file for full control:
+    ```yaml
+    persona: ./my-persona.yaml
+    ```
+    See [custom personas](/guides/custom-personas) for the full schema.
+  </Tab>
+</Tabs>
+
+## Supported industries
+
+| Industry | Data theme | Example endpoints |
+|---|---|---|
+| **Fintech** | Payments, accounts, transactions | `/api/v2/transactions`, `/api/v2/accounts` |
+| **SaaS** | Users, teams, billing | `/api/v1/workspaces`, `/api/v1/billing` |
+| **Healthcare** | Patients, records, appointments | `/fhir/Patient`, `/api/v1/appointments` |
+| **E-commerce** | Products, orders, inventory | `/api/v1/products`, `/api/v1/orders` |
+| **DevTools** | Repos, pipelines, deployments | `/api/v2/repos`, `/api/v2/pipelines` |
+| **Logistics** | Shipments, tracking, warehouses | `/api/v1/shipments`, `/api/v1/tracking` |
+
+## Anti-detection
+
+Sundew's test suite (`test_anti_detection.py`) deploys 5 instances with different personas and verifies zero cross-instance correlation across:
+
+- Response body structure and field names
+- HTTP header combinations
+- Error message formatting
+- Endpoint path patterns
+- Timing distributions

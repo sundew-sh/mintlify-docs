@@ -1,0 +1,146 @@
+---
+title: Configuration
+description: Configure traps, persona generation, LLM, and storage
+---
+
+All configuration lives in `sundew.yaml` at the project root.
+
+## Full reference
+
+```yaml sundew.yaml
+traps:
+  mcp_server: true        # Enable MCP server trap
+  rest_api: true           # Enable REST API trap
+  ai_discovery: true       # Enable AI discovery endpoints
+
+persona: auto              # "auto" for random, or path to persona.yaml
+
+llm:
+  provider: ollama         # ollama | anthropic | openai | none
+  model: llama3            # Model name for the provider
+  base_url: null           # Custom API base URL (optional)
+  api_key: null            # API key — use env vars instead
+  temperature: 0.7         # Generation temperature
+  max_tokens: 2048         # Max tokens per generation
+
+server:
+  host: 0.0.0.0            # Listen address
+  port: 8080               # Listen port
+
+storage:
+  database: ./data/sundew.db       # SQLite database path
+  log_file: ./data/events.jsonl    # JSONL event log path
+
+logging:
+  level: info              # debug | info | warning | error
+  output: stdout           # stdout | file path
+```
+
+## Traps
+
+Enable or disable individual trap surfaces:
+
+```yaml
+traps:
+  mcp_server: true
+  rest_api: true
+  ai_discovery: true
+```
+
+Disabling a trap removes its routes entirely — no 404s, no trace.
+
+## Persona
+
+The `persona` field controls identity generation:
+
+| Value | Behavior |
+|---|---|
+| `auto` | Generate a random persona on first run |
+| File path | Load a custom persona from YAML |
+
+```yaml
+# Random persona
+persona: auto
+
+# Custom persona
+persona: ./my-persona.yaml
+```
+
+See [custom personas](/guides/custom-personas) for the full persona schema.
+
+## LLM providers
+
+Sundew uses an LLM to generate response templates at deploy time. Supported providers:
+
+<Tabs>
+  <Tab title="Ollama (local)">
+    ```yaml
+    llm:
+      provider: ollama
+      model: llama3
+    ```
+    No API key needed. Requires [Ollama](https://ollama.ai) running locally.
+  </Tab>
+  <Tab title="Anthropic">
+    ```yaml
+    llm:
+      provider: anthropic
+      model: claude-sonnet-4-5-20250929
+    ```
+    Set `ANTHROPIC_API_KEY` in your environment.
+  </Tab>
+  <Tab title="OpenAI">
+    ```yaml
+    llm:
+      provider: openai
+      model: gpt-4o
+    ```
+    Set `OPENAI_API_KEY` in your environment.
+  </Tab>
+  <Tab title="None">
+    ```yaml
+    llm:
+      provider: none
+    ```
+    Uses pre-built persona packs only. No LLM required.
+  </Tab>
+</Tabs>
+
+<Info>
+LLM calls happen **only at deploy time** during persona generation. There are zero LLM calls during runtime operation — all responses are served from the pre-generated template cache.
+</Info>
+
+## Server
+
+```yaml
+server:
+  host: 0.0.0.0
+  port: 8080
+```
+
+These can be overridden via CLI flags:
+
+```bash
+sundew serve --host 127.0.0.1 --port 9090
+```
+
+## Storage
+
+```yaml
+storage:
+  database: ./data/sundew.db
+  log_file: ./data/events.jsonl
+```
+
+- **SQLite** — structured storage for queries and session analysis
+- **JSONL** — append-only streaming log with automatic rotation (100 MB default, 5 backups)
+
+## Environment variables
+
+Sensitive values should be set as environment variables rather than in config:
+
+| Variable | Purpose |
+|---|---|
+| `ANTHROPIC_API_KEY` | API key for Anthropic LLM provider |
+| `OPENAI_API_KEY` | API key for OpenAI LLM provider |
+| `SUNDEW_LOG_LEVEL` | Override logging level |

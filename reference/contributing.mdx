@@ -1,0 +1,136 @@
+---
+title: Contributing
+description: Development setup, code style, and how to contribute
+---
+
+## Development setup
+
+**Requirements:**
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/) (recommended) or pip
+- Docker (for integration tests)
+- Ollama (optional, for persona generation)
+
+**Install:**
+
+<Tabs>
+  <Tab title="uv (recommended)">
+    ```bash
+    git clone https://github.com/sundew-sh/sundew.git
+    cd sundew
+    uv sync --all-extras
+    ```
+  </Tab>
+  <Tab title="pip">
+    ```bash
+    git clone https://github.com/sundew-sh/sundew.git
+    cd sundew
+    pip install -e ".[dev,all]"
+    ```
+  </Tab>
+</Tabs>
+
+**Verify:**
+
+```bash
+make lint    # ruff check + mypy
+make test    # pytest
+make run     # start locally
+```
+
+## Code style
+
+- **Python 3.11+** — modern syntax (`|` unions, `match` statements)
+- **Type hints everywhere** — all function signatures, return types, class attributes
+- **Ruff** for linting and formatting (line length 100)
+- **mypy** in strict mode
+- **Google-style docstrings** on all public functions and classes
+
+```bash
+make lint    # check
+make fmt     # auto-format
+```
+
+## Making changes
+
+<Steps>
+  <Step title="Create a branch">
+    ```bash
+    git checkout -b your-feature-name
+    ```
+  </Step>
+  <Step title="Write code">
+    Follow the code style above. Key principles:
+    - No TODOs in code — future work goes in ROADMAP.md or GitHub issues
+    - Tests for every change
+    - Never execute user-supplied code (see [threat model](/security/threat-model))
+  </Step>
+  <Step title="Test">
+    ```bash
+    make test           # unit tests
+    make test-coverage  # with coverage
+    make lint           # linting + types
+    make audit          # security (pip-audit + bandit)
+    ```
+  </Step>
+  <Step title="Submit a PR">
+    Clear title and description, reference related issues, ensure CI passes.
+  </Step>
+</Steps>
+
+## Areas for contribution
+
+| Area | Examples |
+|---|---|
+| **Persona packs** | New industry themes (e-commerce, IoT, gaming, government) |
+| **Trap types** | GraphQL, gRPC, WebSocket, SSH |
+| **Fingerprinting signals** | New detection heuristics |
+| **Research** | Deploy Sundew and share anonymized findings |
+
+## Adding a persona pack
+
+Persona packs let Sundew run without an LLM. Create a JSON file in `src/sundew/persona/packs/`:
+
+```bash
+sundew generate --persona your-industry --export src/sundew/persona/packs/your-industry.json
+```
+
+Requirements:
+- Realistic company name and industry context
+- At least 5 REST endpoints with varied response structures
+- MCP tools matching the industry theme
+- Realistic fake data (valid UUIDs, plausible emails, real timestamps)
+- Error responses matching the persona's error style
+
+## Adding a trap type
+
+Create a module in `src/sundew/traps/`:
+
+```python
+# src/sundew/traps/your_trap.py
+from fastapi import APIRouter, Request
+from sundew.models import Persona
+from sundew.fingerprint import FingerprintCollector
+
+def create_router(persona: Persona, collector: FingerprintCollector) -> APIRouter:
+    router = APIRouter()
+
+    @router.get("/your-endpoint")
+    async def your_endpoint(request: Request) -> dict:
+        collector.record(request, signal="your_signal")
+        return persona.get_response("/your-endpoint", "GET")
+
+    return router
+```
+
+Key requirements:
+- Every trap **must** read from the persona — no hardcoded responses
+- Every request **must** be recorded via `FingerprintCollector`
+- No LLM calls at runtime
+- No execution of user-supplied input
+
+## Questions?
+
+- [GitHub Discussions](https://github.com/sundew-sh/sundew/discussions)
+- [Documentation](https://docs.sundew.sh)
+- Check existing issues before filing new ones

@@ -1,0 +1,93 @@
+---
+title: Threat model
+description: Security architecture, invariants, and deployment hardening
+---
+
+## Architecture invariants
+
+These properties **must** hold for every Sundew deployment. If any invariant is violated, the deployment is compromised and must be torn down.
+
+| Invariant | Enforcement |
+|---|---|
+| **No code execution** from external input | No `eval`, `exec`, `subprocess`, or `importlib` calls on any value derived from HTTP requests or MCP messages. Verified by `test_security.py`. |
+| **MCP tools are pure fiction** | All tool handlers return hardcoded cached responses only. No shell, no database query, no filesystem read is performed. |
+| **Read-only filesystem** | Container root filesystem is read-only. Only `./data/` is writable. |
+| **Non-root execution** | Runs as UID 1001 (`sundew` user). No capabilities granted. |
+| **No outbound network** | Egress blocked by default. Zero outbound connections. DNS disabled inside the container. |
+| **No real secrets** | All tokens are verifiably fake — `sk-sundew-FAKE-` prefixed keys, RFC 1918 IPs, `.example.com` domains. |
+
+## Canary token safety
+
+Sundew generates canary tokens (fake credentials) that AI agents may discover and attempt to use. All canary values are designed to be harmless:
+
+| Token type | Safety measure |
+|---|---|
+| IP addresses | RFC 1918 reserved ranges only (`10.x`, `172.16.x`, `192.168.x`) |
+| Domains | `.example.com`, `.example.org`, `.test` TLDs (IANA reserved, never resolve) |
+| API keys | `sk-sundew-FAKE-` prefix (no real provider accepts this) |
+| Database strings | Point to `localhost:0` or reserved IPs with non-routable ports |
+| OAuth tokens | `sundew-fake-token-` prefix, not valid JWT |
+
+Every canary value is validated at startup via `sundew.canary.is_verifiably_fake()`. Deployment fails if any canary could be mistaken for a real credential.
+
+## Risk: pivot to host network
+
+**Scenario:** An attacker exploits a vulnerability in Sundew or its dependencies to pivot to the host network.
+
+**Mitigations:**
+- Docker network isolation with `--network=none` or dedicated internal bridge
+- Read-only root filesystem (`--read-only`)
+- No capabilities (`--cap-drop=ALL`)
+- Seccomp default profile
+- No volume mounts except `./data/`
+- Regular dependency audits via `make audit`
+
+**Residual risk:** Container escape via kernel vulnerability. Mitigate with up-to-date host kernels; consider gVisor or Kata containers for high-security deployments.
+
+## Risk: log storage exhaustion
+
+**Scenario:** Attacker floods the honeypot, filling disk and crashing the host.
+
+**Mitigations:**
+- SQLite max size: 500 MB (oldest events pruned automatically)
+- JSONL rotation: 100 MB with 5 backups
+- Docker storage limit: `--storage-opt size=1G`
+- Rate limiting: 100 req/s per source IP
+
+## Risk: fingerprinted as Sundew
+
+**Scenario:** An agent detects patterns shared across Sundew deployments.
+
+**Mitigations:**
+- Persona engine generates unique responses, headers, timing, and error formats per deployment
+- `test_anti_detection.py` verifies zero cross-instance correlation across 5 different personas
+- For highest security, use fully custom persona packs (not generated)
+
+## Security auditing
+
+Run the full audit:
+
+```bash
+make audit
+```
+
+This executes:
+1. `pip-audit` — dependency vulnerability scan
+2. `bandit -r src/` — static analysis for Python security issues
+3. `pytest tests/test_security.py` — runtime invariant verification
+4. `pytest tests/test_anti_detection.py` — anti-fingerprinting verification
+
+All four must pass before any release.
+
+## Responsible disclosure
+
+Report security vulnerabilities to **contact@sundew.sh** with subject `[SUNDEW-SECURITY]`.
+
+| Action | Timeline |
+|---|---|
+| Acknowledgment | 48 hours |
+| Initial assessment | 7 days |
+| Fix (critical) | 30 days |
+| Fix (other) | 90 days |
+
+Do **not** file public GitHub issues for security vulnerabilities.

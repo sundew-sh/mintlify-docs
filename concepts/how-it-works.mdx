@@ -1,0 +1,73 @@
+---
+title: How it works
+description: Sundew's architecture from request to classification
+---
+
+## Overview
+
+Sundew is a passive honeypot. It serves fabricated data, logs inbound requests, and **never executes attacker-supplied code**. The system has four layers:
+
+1. **Trap surfaces** receive incoming requests (MCP, REST API, AI discovery endpoints)
+2. **Fingerprinter** analyzes each request across 5 behavioral signals
+3. **Classifier** maps composite scores to attack categories
+4. **Storage** persists events to SQLite and streaming JSONL logs
+
+The **persona engine** shapes everything above — endpoint paths, response bodies, headers, timing, error formats, tool names, and data themes. Every deployment is unique.
+
+## Request flow
+
+```
+                     Incoming Request
+                           |
+                +----------+-----------+
+                |                      |
+          MCP Protocol           HTTP Request
+                |                      |
+        +-------+-------+    +---------+---------+
+        | MCP Trap      |    | REST API Trap     |
+        | Fake tools    |    | Fake endpoints    |
+        | per persona   |    | per persona       |
+        +-------+-------+    +---------+---------+
+                |                      |
+                +----------+-----------+
+                           |
+                 +---------+---------+
+                 | Fingerprinter     |
+                 | 5 signal scores   |
+                 | 0.0-1.0 each      |
+                 +---------+---------+
+                           |
+                 +---------+---------+
+                 | Classifier        |
+                 | human | automated |
+                 | ai_assisted |     |
+                 | ai_agent         |
+                 +---------+---------+
+                           |
+                 +---------+---------+
+                 | Storage           |
+                 | SQLite + JSONL    |
+                 +-------------------+
+```
+
+## Classification
+
+The fingerprinter produces a composite score from 0.0 to 1.0. The classifier maps this to four categories:
+
+| Score range | Classification | Description |
+|---|---|---|
+| < 0.3 | `human` | Normal browser traffic |
+| 0.3 – 0.6 | `automated` | Scripted scanners, bots |
+| 0.6 – 0.8 | `ai_assisted` | Human using AI tools |
+| > 0.8 | `ai_agent` | Fully autonomous AI agent |
+
+Sessions are grouped by source IP and temporal proximity. Classification is updated as more requests arrive and the composite score stabilizes.
+
+## Data storage
+
+Events are persisted in two formats:
+
+- **SQLite** (`./data/sundew.db`) — structured storage for queries, sessions, and aggregated fingerprints
+- **JSONL** (`./data/events.jsonl`) — append-only streaming log for real-time processing and export
+
+Both are queryable via the CLI (`sundew query`) or the MCP server (`sundew mcp-client`).

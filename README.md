@@ -1,43 +1,49 @@
-# Mintlify Starter Kit
+# Sundew Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+Documentation site for [Sundew](https://github.com/sundew-sh/sundew) — a carnivorous honeypot for AI agents.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+Live at [docs.sundew.sh](https://docs.sundew.sh).
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+## Local development
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+Install the [Mintlify CLI](https://www.npmjs.com/package/mint):
 
-## Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
+```bash
 npm i -g mint
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+Preview locally:
 
-```
+```bash
 mint dev
 ```
 
-View your local preview at `http://localhost:3000`.
+View at `http://localhost:3000`.
 
-## Publishing changes
+## Structure
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+```
+├── index.mdx                  Homepage
+├── quickstart.mdx             Getting started
+├── concepts/                  Core concepts
+│   ├── how-it-works.mdx       Architecture overview
+│   ├── persona-engine.mdx     Persona generation
+│   ├── traps.mdx              Trap surfaces
+│   └── fingerprinting.mdx     Behavioral analysis
+├── guides/                    How-to guides
+│   ├── configuration.mdx      Configuration reference
+│   ├── deployment.mdx         Production deployment
+│   ├── custom-personas.mdx    Building custom personas
+│   └── querying.mdx           Querying captured data
+├── security/                  Security docs
+│   ├── threat-model.mdx       Threat model and hardening
+│   └── ethical-use.mdx        Legal and ethical use
+└── reference/                 Reference docs
+    ├── cli.mdx                CLI commands
+    ├── configuration.mdx      Full config reference
+    └── contributing.mdx       Contributing guide
+```
 
-## Need help?
+## Deploying
 
-### Troubleshooting
-
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
-
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+Changes pushed to `main` are deployed automatically via the Mintlify GitHub app.

@@ -1,0 +1,53 @@
+---
+title: Ethical and legal use
+description: Legal considerations, MCP ethics, and responsible data handling
+---
+
+## Honeypot legality
+
+Operating a honeypot on **infrastructure you own or are authorized to operate** is legal in most jurisdictions.
+
+- **United States:** No federal law prohibits operating honeypots on your own systems. The CFAA (18 U.S.C. 1030) applies to unauthorized access to *protected computers* — a honeypot you operate is not a protected computer in this context.
+- **European Union:** GDPR applies to logged IP addresses (personal data). Operators must have a legitimate interest basis (Article 6(1)(f)) and should document this in a Data Protection Impact Assessment (DPIA).
+- **General principle:** Do not deploy Sundew on networks you do not own or are not authorized to monitor.
+
+<Warning>
+You are responsible for ensuring your deployment complies with local laws. Sundew provides the tool; you provide the legal basis.
+</Warning>
+
+## MCP server registration
+
+Sundew can register as a discoverable MCP server. This is **intentional and ethical**:
+
+- MCP is an open protocol. Registering a server is analogous to publishing a web page.
+- Sundew presents as a **fictional** company/API — it does not impersonate a specific real service.
+- The purpose is **detection and research**, not disruption of agent operations.
+- Agents interacting with Sundew are not harmed — they receive fake data that is non-functional in any real context.
+
+## Canary tokens: not entrapment
+
+Canary tokens are **markers**, not **inducements**:
+
+- **Entrapment** (in US law) requires a government actor inducing someone to commit a crime they were not predisposed to commit.
+- Sundew is not a law enforcement tool. It is a research and detection tool operated by private entities.
+- Canary tokens do not induce any action. They are passive data that becomes meaningful only when an agent exfiltrates and attempts to use them.
+- All canary values are verifiably fake and cannot cause harm if used.
+
+## Publishing captured data
+
+Sundew supports academic research on AI agent behavior. When publishing collected data:
+
+| Data type | Rule |
+|---|---|
+| IP addresses | **Must** be anonymized (hashed or replaced with synthetic IPs) |
+| User-Agent strings | May be published (describes software, not individuals) |
+| Request payloads | May be published if they contain no personally identifiable information |
+| Timestamps | Should be bucketed (hourly or daily) to prevent correlation |
+
+Use the built-in anonymization:
+
+```bash
+sundew export --anonymize
+```
+
+If operating in the EU, consider the GDPR "right to erasure" for logged data. Follow your institution's IRB process if applicable.

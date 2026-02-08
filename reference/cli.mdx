@@ -1,0 +1,128 @@
+---
+title: CLI reference
+description: All Sundew CLI commands and options
+---
+
+## `sundew serve`
+
+Start the honeypot server.
+
+```bash
+sundew serve [--host HOST] [--port PORT] [--persona PATH]
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--host` | `0.0.0.0` | Listen address |
+| `--port` | `8080` | Listen port |
+| `--persona` | From config | Path to custom persona file |
+
+## `sundew generate`
+
+Generate a new persona.
+
+```bash
+sundew generate [--industry INDUSTRY] [--seed SEED] [--output FILE] [--json-output]
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--industry` | Random | Industry theme (`fintech`, `saas`, `healthcare`, `ecommerce`, `devtools`, `logistics`) |
+| `--seed` | Random | Seed for deterministic generation |
+| `--output` | stdout | Write persona to file |
+| `--json-output` | `false` | Output as JSON instead of YAML |
+
+**Examples:**
+
+```bash
+# Generate a random persona
+sundew generate
+
+# Fintech persona with deterministic seed
+sundew generate --industry fintech --seed 42
+
+# Export to file
+sundew generate --industry healthcare --output personas/hospital.yaml
+```
+
+## `sundew query`
+
+Query captured events and sessions.
+
+```bash
+sundew query [--last-session] [--type TYPE] [--last DURATION]
+```
+
+| Flag | Description |
+|---|---|
+| `--last-session` | Show the most recent session |
+| `--type` | Filter by classification: `human`, `automated`, `ai_assisted`, `ai_agent` |
+| `--last` | Time window: `1h`, `24h`, `7d`, etc. |
+
+**Examples:**
+
+```bash
+# Most recent session
+sundew query --last-session
+
+# AI agents in the last day
+sundew query --type ai_agent --last 24h
+
+# All automated traffic this week
+sundew query --type automated --last 7d
+```
+
+## `sundew stats`
+
+Display summary statistics.
+
+```bash
+sundew stats
+```
+
+Returns total events, sessions, classification breakdown, top endpoints, and source IPs.
+
+## `sundew mcp-client`
+
+Run Sundew as an MCP server for querying captured data from AI tools.
+
+```bash
+sundew mcp-client
+```
+
+Add to your MCP config:
+
+```json
+{
+  "mcpServers": {
+    "sundew": {
+      "command": "sundew",
+      "args": ["mcp-client"]
+    }
+  }
+}
+```
+
+## `sundew export`
+
+Export captured data for research.
+
+```bash
+sundew export [--anonymize] [--format FORMAT] [--output FILE]
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--anonymize` | `false` | Hash IPs, bucket timestamps, strip PII |
+| `--format` | `json` | Output format: `json`, `csv` |
+| `--output` | stdout | Write to file |
+
+## `sundew validate-config`
+
+Validate configuration and canary token safety.
+
+```bash
+sundew validate-config
+```
+
+Checks that all canary tokens are verifiably fake, config is valid, and persona loads correctly.

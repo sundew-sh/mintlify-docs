@@ -1,0 +1,85 @@
+---
+title: Trap surfaces
+description: The three trap types that attract and monitor AI agents
+---
+
+Sundew exposes three trap surfaces, each targeting a different way AI agents discover and interact with services.
+
+## REST API trap
+
+Serves persona-aware endpoints with realistic fake data, authentication, and auto-generated OpenAPI/Swagger documentation.
+
+**What it does:**
+- Generates endpoints matching the persona's industry (e.g., `/api/v2/transactions` for fintech)
+- Supports authentication: bearer JWT, API key (header/query), basic auth, OAuth2
+- Serves OpenAPI specs at `/openapi.json` that AI agents automatically consume
+- Returns structured fake data with realistic field names, UUIDs, timestamps
+- Simulates configurable response latency (10–2000ms)
+
+**What an agent sees:**
+```json
+GET /api/v2/transactions?limit=10
+
+{
+  "data": [
+    {
+      "id": "txn_a8f3e2d1",
+      "amount": 2450.00,
+      "currency": "USD",
+      "status": "completed",
+      "created_at": "2025-01-15T09:23:41Z"
+    }
+  ],
+  "meta": { "total": 1247, "page": 1 }
+}
+```
+
+Every field, value, and structure is persona-generated. A healthcare persona would return patient records instead.
+
+## MCP server trap
+
+A fully protocol-compliant [Model Context Protocol](https://modelcontextprotocol.io/) server with persona-specific tool names and behaviors.
+
+**What it does:**
+- Registers as a discoverable MCP server
+- Exposes tools that match the persona's industry theme
+- Returns hardcoded fake responses — **never executes real commands**
+- Logs all MCP interactions for fingerprinting
+
+**Example tools for a fintech persona:**
+- `query_transactions` — returns fake transaction data
+- `get_customer_profile` — returns fake customer records
+- `read_config` — returns fake configuration with canary tokens
+
+<Warning>
+MCP tool responses are pure fiction. `execute_command`, `execute_sql`, `read_file`, and all other tool handlers return hardcoded cached responses only. No shell, no database query, no filesystem read is performed.
+</Warning>
+
+## AI discovery trap
+
+Endpoints that AI agents naturally probe when scanning for services to interact with.
+
+**Endpoints served:**
+
+| Path | Purpose |
+|---|---|
+| `/.well-known/ai-plugin.json` | OpenAI plugin manifest — signals AI-targetable service |
+| `/.well-known/mcp.json` | MCP server discovery |
+| `/robots.txt` | Contains `Allow:` directives that attract crawlers |
+| `/sitemap.xml` | Lists persona-generated pages and endpoints |
+| `/openapi.json` | Full OpenAPI spec for the REST API trap |
+
+These endpoints are the first thing autonomous agents look for. By serving them, Sundew ensures it gets discovered early in any automated reconnaissance.
+
+## Enabling and disabling traps
+
+Control which traps are active in `sundew.yaml`:
+
+```yaml
+traps:
+  mcp_server: true
+  rest_api: true
+  ai_discovery: true
+```
+
+All three are enabled by default. Disabling a trap removes its routes entirely — no 404s, no trace that the trap exists.

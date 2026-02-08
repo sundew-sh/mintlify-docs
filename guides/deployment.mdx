@@ -1,0 +1,113 @@
+---
+title: Deployment
+description: Deploy Sundew to production with Docker
+---
+
+## Docker Compose (recommended)
+
+The quickest path to a production deployment:
+
+```yaml docker-compose.yml
+services:
+  sundew:
+    image: sundewsh/sundew:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+```
+
+```bash
+docker compose up -d
+```
+
+## Security hardening
+
+Sundew's Docker image is hardened by default:
+
+| Property | Default |
+|---|---|
+| Root filesystem | Read-only (`--read-only`) |
+| User | Non-root, UID 1001 (`sundew`) |
+| Capabilities | None (`--cap-drop=ALL`) |
+| Writable paths | `./data/` only |
+| Health check | `/health` endpoint |
+
+### Network isolation
+
+For maximum security, deploy with no outbound network access:
+
+```bash
+docker run --network=none sundewsh/sundew:latest
+```
+
+Or use a dedicated bridge network with no internet access:
+
+```bash
+docker network create --internal sundew-net
+docker run --network=sundew-net sundewsh/sundew:latest
+```
+
+### Storage limits
+
+Prevent disk exhaustion from high-traffic attacks:
+
+```bash
+docker run --storage-opt size=1G sundewsh/sundew:latest
+```
+
+Sundew also has built-in limits:
+- SQLite database: 500 MB max (oldest events pruned)
+- JSONL log: 100 MB with 5 rotated backups
+- Rate limiting: 100 req/s per source IP (configurable)
+
+## Deployment checklist
+
+Before going live, verify:
+
+<Steps>
+  <Step title="Network isolation">
+    Container has no outbound network access (`--network=none` or internal bridge).
+  </Step>
+  <Step title="Read-only filesystem">
+    Root filesystem is read-only with only `./data/` writable.
+  </Step>
+  <Step title="Non-root execution">
+    Running as non-root user (UID 1001).
+  </Step>
+  <Step title="No real credentials">
+    No real API keys, tokens, or passwords anywhere in config or persona files.
+  </Step>
+  <Step title="Canary validation">
+    All canary tokens are verifiably fake: `sundew validate-config`.
+  </Step>
+  <Step title="Log rotation">
+    Storage limits configured to prevent disk exhaustion.
+  </Step>
+  <Step title="Host firewall">
+    Only the honeypot port is open inbound. No egress allowed.
+  </Step>
+  <Step title="Security audit">
+    `make audit` passes (pip-audit + bandit + security tests).
+  </Step>
+</Steps>
+
+## Building from source
+
+```dockerfile
+docker build -t sundew:local .
+docker run -p 8080:8080 -v ./data:/app/data sundew:local
+```
+
+The Dockerfile uses a multi-stage build on `python:3.12-slim` with all security hardening applied.

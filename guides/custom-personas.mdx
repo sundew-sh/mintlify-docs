@@ -1,0 +1,109 @@
+---
+title: Custom personas
+description: Build industry-specific personas for targeted deception
+---
+
+## Generate a persona
+
+Use the CLI to generate a new persona:
+
+```bash
+# Random persona
+sundew generate
+
+# Specific industry
+sundew generate --industry healthcare
+
+# With a specific seed (deterministic)
+sundew generate --seed 42 --industry fintech
+
+# Export to file
+sundew generate --industry ecommerce --output my-persona.yaml
+
+# JSON output
+sundew generate --industry saas --json-output
+```
+
+## Persona schema
+
+A persona YAML file contains:
+
+```yaml my-persona.yaml
+persona:
+  company_name: "Meridian Commerce"
+  industry: "ecommerce"
+  api_style: "rest"
+  framework_fingerprint: "express"
+  auth_scheme: "bearer_jwt"
+  data_theme: "retail"
+  response_latency_ms: [60, 280]
+  server_header: "nginx/1.25.3"
+  endpoint_prefix: "/api/v1"
+```
+
+### Field reference
+
+| Field | Description | Options |
+|---|---|---|
+| `company_name` | Fictional company name | Any string |
+| `industry` | Industry theme | `fintech`, `saas`, `healthcare`, `ecommerce`, `devtools`, `logistics` |
+| `api_style` | API style | `rest`, `graphql`, `jsonrpc` |
+| `framework_fingerprint` | Simulated framework | `express`, `django`, `rails`, `spring`, `fastapi` |
+| `auth_scheme` | Authentication method | `bearer_jwt`, `api_key_header`, `api_key_query`, `basic`, `oauth2` |
+| `data_theme` | Data domain for responses | `financial`, `users`, `patients`, `retail`, `tickets` |
+| `response_latency_ms` | Simulated latency range [min, max] | Any integers |
+| `server_header` | HTTP `Server` header value | Any string |
+| `endpoint_prefix` | URL prefix for all endpoints | e.g., `/api/v1`, `/api/v2` |
+
+## Use a custom persona
+
+Point `sundew.yaml` at your persona file:
+
+```yaml sundew.yaml
+persona: ./my-persona.yaml
+```
+
+Or pass it via CLI:
+
+```bash
+sundew serve --persona ./my-persona.yaml
+```
+
+## Pre-built persona packs
+
+Sundew ships with persona packs that work without an LLM. These are JSON files in `src/sundew/persona/packs/` containing pre-generated response templates.
+
+### Pack structure
+
+```json
+{
+  "meta": {
+    "industry": "ecommerce",
+    "description": "Online retail platform",
+    "version": "1.0.0"
+  },
+  "persona": {
+    "company_name": "Meridian Commerce",
+    "industry": "ecommerce",
+    "api_style": "rest",
+    "framework_fingerprint": "express",
+    "auth_scheme": "bearer_jwt",
+    "data_theme": "retail",
+    "response_latency_ms": [60, 280],
+    "server_header": "nginx/1.25.3",
+    "endpoint_prefix": "/api/v1"
+  },
+  "endpoints": { ... },
+  "mcp_tools": [ ... ],
+  "discovery": { ... }
+}
+```
+
+### Requirements for a good pack
+
+- Realistic company name and industry context
+- At least 5 REST endpoints with varied response structures
+- MCP tools that match the industry theme
+- Realistic fake data (valid UUIDs, plausible emails, real-looking timestamps)
+- Error responses that match the persona's error style
+- No overlap with existing packs in field names or response patterns

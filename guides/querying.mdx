@@ -1,0 +1,116 @@
+---
+title: Querying events
+description: Analyze captured sessions with the CLI and MCP server
+---
+
+## CLI queries
+
+Sundew provides a built-in CLI for querying captured data.
+
+### Recent sessions
+
+```bash
+# Most recent session
+sundew query --last-session
+
+# Last 24 hours of activity
+sundew query --last 24h
+
+# Last week
+sundew query --last 7d
+```
+
+### Filter by classification
+
+```bash
+# Only AI agent traffic
+sundew query --type ai_agent
+
+# Automated scanners
+sundew query --type automated
+
+# AI-assisted interactions
+sundew query --type ai_assisted
+
+# Combine filters
+sundew query --type ai_agent --last 24h
+```
+
+### Statistics
+
+```bash
+sundew stats
+```
+
+Returns a summary of:
+- Total events and sessions
+- Classification breakdown
+- Most-hit endpoints
+- Trap type distribution
+- Top source IPs
+
+## MCP server for researchers
+
+Use Sundew as an MCP server to query your honeypot data from Claude or other AI tools:
+
+```json
+{
+  "mcpServers": {
+    "sundew": {
+      "command": "sundew",
+      "args": ["mcp-client"]
+    }
+  }
+}
+```
+
+This exposes your captured data as MCP tools, letting you ask natural language questions about agent behavior directly from your AI assistant.
+
+## Data format
+
+### Request events
+
+Each captured request contains:
+
+| Field | Description |
+|---|---|
+| `id` | Unique event identifier |
+| `timestamp` | ISO 8601 timestamp |
+| `session_id` | Correlated session |
+| `source_ip` | Origin IP address |
+| `method` | HTTP method or MCP operation |
+| `path` | Request path |
+| `headers` | Full HTTP headers |
+| `body` | Request body (if present) |
+| `fingerprint_scores` | Per-signal scores |
+| `classification` | Computed classification |
+| `trap_type` | Which trap handled it (`rest_api`, `mcp`, `discovery`) |
+
+### Sessions
+
+Sessions aggregate multiple requests:
+
+| Field | Description |
+|---|---|
+| `id` | Session identifier |
+| `source_ip` | Shared origin |
+| `first_seen` / `last_seen` | Time range |
+| `request_count` | Total requests in session |
+| `classification` | Aggregated classification |
+| `fingerprint_scores` | Aggregated signal scores |
+| `endpoints_hit` | List of endpoints accessed |
+| `trap_types_triggered` | Which traps were activated |
+
+## Exporting data
+
+For research and sharing:
+
+```bash
+sundew export --anonymize
+```
+
+Anonymization automatically:
+- Hashes IP addresses
+- Buckets timestamps to hourly granularity
+- Strips any PII from request bodies
+- Preserves behavioral data for analysis

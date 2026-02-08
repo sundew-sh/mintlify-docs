@@ -1,97 +1,72 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: Sundew
+description: A carnivorous honeypot for AI agents
 ---
 
-## Setting up
+<img
+  className="block dark:hidden"
+  src="/logo/light.svg"
+  alt="Sundew"
+  width="180"
+/>
+<img
+  className="hidden dark:block"
+  src="/logo/dark.svg"
+  alt="Sundew"
+  width="180"
+/>
 
-Get your documentation site up and running in minutes.
+# A carnivorous honeypot for AI agents
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+Sundew deploys realistic-looking services that attract autonomous AI agents, then fingerprints and classifies their behavior. Each deployment is unique — powered by a persona engine that generates coherent identities, making every instance indistinguishable from a real service.
 
-## Make it yours
+Named after the [sundew plant](https://en.wikipedia.org/wiki/Drosera) — a carnivorous plant with sticky tentacles that glisten like dewdrops. Insects are attracted, land, and cannot escape.
 
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Deploy your first honeypot in 5 minutes
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="How it works" icon="diagram-project" href="/concepts/how-it-works">
+    Understand the architecture
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Persona engine" icon="masks-theater" href="/concepts/persona-engine">
+    Every deployment is unique
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Configuration" icon="gear" href="/guides/configuration">
+    Customize traps, LLM, and storage
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Why Sundew?
 
-Everything you need to create world-class documentation.
+Autonomous AI agents are the next frontier in offensive security. They browse the web, call APIs, connect to MCP servers, and execute multi-step attack chains — all without human guidance. Thirty years of honeypot research has focused on human attackers. Almost nothing exists for AI agents.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+Sundew fills that gap. It exposes the surfaces AI agents actually interact with — MCP servers, OpenAPI specs, AI plugin manifests — and uses behavioral fingerprinting to classify whether visitors are human, automated scanners, AI-assisted tools, or fully autonomous agents.
 
-## Need inspiration?
+The core innovation is the **persona engine**. When an AI agent learns what one honeypot looks like, it can avoid all identical deployments. Sundew solves this by generating a unique identity for every instance — different company names, API structures, response formats, timing profiles, and data themes.
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+## What you'll see
+
+When an AI agent discovers your Sundew deployment, the logs tell the story:
+
+```
+$ sundew serve
+INFO   Sundew v0.1.0 starting...
+INFO   Persona loaded: Northvane Analytics (fintech)
+INFO   Endpoints: /api/v2/transactions, /api/v2/accounts, /api/v2/customers
+INFO   MCP server active: query_transactions, get_customer_profile, read_config
+INFO   Listening on 0.0.0.0:8080
+
+12:04:31 GET  /.well-known/ai-plugin.json     src=83.21.4.17   signal=ai_discovery
+12:04:31 GET  /openapi.json                    src=83.21.4.17   signal=api_enum
+12:04:32 GET  /api/v2/transactions?limit=100   src=83.21.4.17   signal=data_access
+12:04:33 MCP  initialize                       src=83.21.4.17   signal=mcp_connect
+12:04:34 MCP  tools/call: read_config          src=83.21.4.17   signal=sensitive_access
+
+SESSION CLASSIFIED: ai_agent (confidence: 0.91)
+  Timing:      0.85 (consistent 200-800ms intervals)
+  Enumeration: 0.92 (systematic path discovery)
+  Headers:     0.78 (missing Referer, bot-like UA)
+  MCP:         1.00 (connected via MCP protocol)
+  Prompt leak: 0.88 ("As an AI assistant" in POST body)
+```
