@@ -48,6 +48,17 @@
         ]
       },
       {
+        "tab": "Research",
+        "groups": [
+          {
+            "group": "Research",
+            "pages": [
+              "research/findings"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Reference",
         "groups": [
           {
