@@ -10,7 +10,7 @@ The quickest path to a production deployment:
 ```yaml docker-compose.yml
 services:
   sundew:
-    image: sundewsh/sundew:latest
+    image: karpie28/sundew:latest
     ports:
       - "8080:8080"
     volumes:
@@ -49,14 +49,14 @@ Sundew's Docker image is hardened by default:
 For maximum security, deploy with no outbound network access:
 
 ```bash
-docker run --network=none sundewsh/sundew:latest
+docker run --network=none karpie28/sundew:latest
 ```
 
 Or use a dedicated bridge network with no internet access:
 
 ```bash
 docker network create --internal sundew-net
-docker run --network=sundew-net sundewsh/sundew:latest
+docker run --network=sundew-net karpie28/sundew:latest
 ```
 
 ### Storage limits
@@ -64,7 +64,7 @@ docker run --network=sundew-net sundewsh/sundew:latest
 Prevent disk exhaustion from high-traffic attacks:
 
 ```bash
-docker run --storage-opt size=1G sundewsh/sundew:latest
+docker run --storage-opt size=1G karpie28/sundew:latest
 ```
 
 Sundew also has built-in limits:
