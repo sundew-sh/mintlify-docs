@@ -110,4 +110,4 @@ docker build -t sundew:local .
 docker run -p 8080:8080 -v ./data:/app/data sundew:local
 ```
 
-The Dockerfile uses a multi-stage build on `python:3.12-slim` with all security hardening applied.
+The Dockerfile uses a multi-stage build on [Docker Hardened Images](https://docs.docker.com/dhi/) (`dhi.io/python:3.13-alpine`) with nonroot execution, no shell, and minimal attack surface.
