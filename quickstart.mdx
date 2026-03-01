@@ -8,9 +8,9 @@ description: Deploy your first Sundew honeypot in 5 minutes
 <Tabs>
   <Tab title="Docker (recommended)">
     ```bash
-    docker compose up
+    docker run -p 8080:8080 karpie28/sundew
     ```
-    Pulls the latest image and starts Sundew with a randomly generated persona.
+    Pulls the latest image from Docker Hub and starts Sundew with a randomly generated persona.
   </Tab>
   <Tab title="pip">
     ```bash
